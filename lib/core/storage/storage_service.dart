@@ -1,73 +1,65 @@
-import 'package:hive_flutter/hive_flutter.dart';
+import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class StorageService {
-  late Box<dynamic> _generalBox;
-  late Box<dynamic> _vehicleBox;
-  late Box<dynamic> _tripsBox;
-  late Box<dynamic> _settingsBox;
+  late SharedPreferences _prefs;
+  static const String _vehiclesKey = 'vehicles';
+  static const String _settingsKey = 'settings';
+  static const String _generalKey = 'general';
 
   Future<void> init() async {
-    await Hive.initFlutter();
-    _generalBox = await Hive.openBox('general');
-    _vehicleBox = await Hive.openBox('vehicles');
-    _tripsBox = await Hive.openBox('trips');
-    _settingsBox = await Hive.openBox('settings');
+    _prefs = await SharedPreferences.getInstance();
   }
 
-  // General
-  Future<void> saveGeneral(String key, dynamic value) async {
-    await _generalBox.put(key, value);
-  }
-
-  dynamic getGeneral(String key, {dynamic defaultValue}) {
-    return _generalBox.get(key, defaultValue: defaultValue);
-  }
-
-  Future<void> deleteGeneral(String key) async {
-    await _generalBox.delete(key);
-  }
-
-  // Vehicles
   Future<void> saveVehicle(String vehicleId, Map<String, dynamic> data) async {
-    await _vehicleBox.put(vehicleId, data);
+    final vehicles = getAllVehicles();
+    vehicles[vehicleId] = data;
+    await _prefs.setString(
+      _vehiclesKey,
+      jsonEncode(vehicles),
+    );
   }
 
-  Map<String, dynamic>? getVehicle(String vehicleId) {
-    return _vehicleBox.get(vehicleId);
-  }
-
-  List<Map<String, dynamic>> getAllVehicles() {
-    return _vehicleBox.values.cast<Map<String, dynamic>>().toList();
+  Map<String, dynamic> getAllVehicles() {
+    final data = _prefs.getString(_vehiclesKey);
+    if (data == null) return {};
+    return jsonDecode(data) as Map<String, dynamic>;
   }
 
   Future<void> deleteVehicle(String vehicleId) async {
-    await _vehicleBox.delete(vehicleId);
+    final vehicles = getAllVehicles();
+    vehicles.remove(vehicleId);
+    await _prefs.setString(
+      _vehiclesKey,
+      jsonEncode(vehicles),
+    );
   }
 
-  // Trips
-  Future<void> saveTrip(String tripId, Map<String, dynamic> data) async {
-    await _tripsBox.put(tripId, data);
-  }
-
-  List<Map<String, dynamic>> getAllTrips() {
-    return _tripsBox.values.cast<Map<String, dynamic>>().toList();
-  }
-
-  // Settings
   Future<void> saveSetting(String key, dynamic value) async {
-    await _settingsBox.put(key, value);
+    final settings = _prefs.getString(_settingsKey) ?? '{}';
+    final settingsMap = jsonDecode(settings) as Map<String, dynamic>;
+    settingsMap[key] = value;
+    await _prefs.setString(
+      _settingsKey,
+      jsonEncode(settingsMap),
+    );
   }
 
-  dynamic getSetting(String key, {dynamic defaultValue}) {
-    return _settingsBox.get(key, defaultValue: defaultValue);
+  dynamic getSetting(String key) {
+    final settings = _prefs.getString(_settingsKey) ?? '{}';
+    final settingsMap = jsonDecode(settings) as Map<String, dynamic>;
+    return settingsMap[key];
   }
 
-  Future<void> clearAll() async {
-    await Future.wait([
-      _generalBox.clear(),
-      _vehicleBox.clear(),
-      _tripsBox.clear(),
-      _settingsBox.clear(),
-    ]);
+  Future<void> saveGeneral(String key, dynamic value) async {
+    await _prefs.setString(key, value.toString());
+  }
+
+  String? getGeneral(String key) {
+    return _prefs.getString(key);
+  }
+
+  Future<void> clear() async {
+    await _prefs.clear();
   }
 }

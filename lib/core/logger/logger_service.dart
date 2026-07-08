@@ -1,29 +1,49 @@
-import 'package:logger/logger.dart';
+enum LogLevel {
+  verbose,
+  debug,
+  info,
+  warning,
+  error,
+  fatal,
+}
 
 class LoggerService {
-  final Logger _logger = Logger(
-    printer: PrettyPrinter(
-      methodCount: 2,
-      errorMethodCount: 8,
-      lineLength: 120,
-      colors: true,
-      printEmojis: true,
-    ),
-  );
+  final List<String> _logs = [];
+  final int _maxLogs = 1000;
 
-  void debug(String message, [dynamic error, StackTrace? stackTrace]) {
-    _logger.d(message, error: error, stackTrace: stackTrace);
+  void log(
+    String message, {
+    LogLevel level = LogLevel.info,
+    dynamic error,
+    StackTrace? stackTrace,
+  }) {
+    final timestamp = DateTime.now().toIso8601String();
+    final logMessage = '[$timestamp] [${level.name.toUpperCase()}] $message';
+    
+    if (error != null) {
+      print('$logMessage\nError: $error');
+      if (stackTrace != null) {
+        print(stackTrace);
+      }
+    } else {
+      print(logMessage);
+    }
+
+    _logs.add(logMessage);
+    if (_logs.length > _maxLogs) {
+      _logs.removeAt(0);
+    }
   }
 
-  void info(String message) {
-    _logger.i(message);
-  }
+  void verbose(String message) => log(message, level: LogLevel.verbose);
+  void debug(String message) => log(message, level: LogLevel.debug);
+  void info(String message) => log(message, level: LogLevel.info);
+  void warning(String message) => log(message, level: LogLevel.warning);
+  void error(String message, [dynamic error, StackTrace? stackTrace]) =>
+      log(message, level: LogLevel.error, error: error, stackTrace: stackTrace);
+  void fatal(String message, [dynamic error, StackTrace? stackTrace]) =>
+      log(message, level: LogLevel.fatal, error: error, stackTrace: stackTrace);
 
-  void warning(String message, [dynamic error]) {
-    _logger.w(message, error: error);
-  }
-
-  void error(String message, [dynamic error, StackTrace? stackTrace]) {
-    _logger.e(message, error: error, stackTrace: stackTrace);
-  }
+  List<String> get logs => _logs;
+  void clearLogs() => _logs.clear();
 }
