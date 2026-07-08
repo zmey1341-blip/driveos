@@ -1,0 +1,95 @@
+name: driveos
+description: "DriveOS - Intelligent Automotive Operating Environment"
+publish_to: 'none'
+
+version: 0.1.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+  flutter: '>=3.10.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  
+  # State Management
+  riverpod: ^2.4.0
+  flutter_riverpod: ^2.4.0
+  hooks_riverpod: ^2.4.0
+  
+  # Local Storage
+  hive: ^2.2.3
+  hive_flutter: ^1.1.0
+  isar: ^3.1.0
+  sqflite: ^2.3.0
+  
+  # Networking
+  dio: ^5.3.0
+  connectivity_plus: ^5.0.0
+  
+  # Maps
+  google_maps_flutter: ^2.5.0
+  
+  # Location
+  geolocator: ^9.0.0
+  
+  # Audio & Music
+  just_audio: ^0.9.0
+  audio_service: ^0.18.0
+  
+  # Speech Recognition & Text-to-Speech
+  speech_to_text: ^6.1.0
+  flutter_tts: ^0.13.0
+  
+  # OBD
+  usb_serial: ^0.9.0
+  
+  # UI
+  flutter_svg: ^2.0.0
+  cached_network_image: ^3.3.0
+  smooth_page_indicator: ^1.1.0
+  shimmer: ^3.0.0
+  
+  # DateTime
+  intl: ^0.19.0
+  
+  # Logging
+  logger: ^2.0.0
+  
+  # JSON Serialization
+  json_serializable: ^6.7.0
+  freezed_annotation: ^2.4.0
+  
+  # Dependency Injection
+  get_it: ^7.6.0
+  
+  # Utils
+  uuid: ^4.0.0
+  path_provider: ^2.1.0
+  permission_handler: ^11.4.0
+  package_info_plus: ^5.0.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^2.0.0
+  build_runner: ^2.4.0
+  hive_generator: ^2.0.0
+  isar_generator: ^3.1.0
+  json_serializable: ^6.7.0
+  freezed: ^2.4.0
+
+flutter:
+  uses-material-design: true
+  
+  assets:
+    - assets/images/
+    - assets/sounds/
+    - assets/icons/
+    - assets/themes/
+    - assets/knowledge_base/
+  
+  fonts:
+    - family: InterVariable
+      fonts:
+        - asset: assets/fonts/InterVariable.ttf
